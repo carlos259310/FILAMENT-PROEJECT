@@ -25,4 +25,18 @@ class Bodega extends Model
         'activo' => 'boolean',
         'principal' => 'boolean',
     ];
+
+    //relaciones 
+
+    
+    public function entradasInventario()
+    {
+        return $this->hasMany(EntradaInventario::class, 'id_bodega');
+    }
+
+    public function inventario()
+    {
+        return $this->hasMany(Inventario::class, 'id_bodega');
+    }
+
 }

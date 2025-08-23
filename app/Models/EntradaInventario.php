@@ -6,35 +6,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Inventario extends Model
+class EntradaInventario extends Model
 {
     use HasFactory;
 
-    protected $table = 'inventarios';
+    protected $table = 'entradas_inventario';
 
     protected $fillable = [
         'id_producto',
         'id_bodega',
+        'id_motivo',
+        'id_factura',
         'cantidad',
         'precio_compra',
         'precio_venta',
-        'precio_compra_promedio',
-        'precio_venta_promedio',
-    ];
-    //ocultos
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
-    protected $casts = [
-        'cantidad' => 'integer',
-        'precio_compra' => 'decimal:2',
-        'precio_venta' => 'decimal:2',
-        'precio_compra_promedio' => 'decimal:2',
-        'precio_venta_promedio' => 'decimal:2',
+        'numero_factura',
+        'numero_remision',
+        'observacion',
     ];
 
-        // Relaciones
+    // Relaciones
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'id_producto');
@@ -44,4 +35,14 @@ class Inventario extends Model
     {
         return $this->belongsTo(Bodega::class, 'id_bodega');
     }
+
+    public function motivo()
+    {
+        return $this->belongsTo(MotivoEntrada::class, 'id_motivo');
+    }
+
+ /*   public function factura()
+    {
+        return $this->belongsTo(Factura::class, 'id_factura');
+    }*/
 }

@@ -29,6 +29,8 @@ class Producto extends Model
         'activo' => 'boolean',
     ];
 
+
+    //relaciones
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'id_categoria');
@@ -43,4 +45,19 @@ class Producto extends Model
     {
         return $this->belongsTo(Proveedor::class, 'id_proveedor');
     }
+
+    // ...existing code...
+    public function entradasInventario()
+    {
+        return $this->hasMany(EntradaInventario::class, 'id_producto');
+    }
+    // ...existing code...
+
+        public function inventario()
+    {
+        return $this->hasMany(Inventario::class, 'id_producto');
+    }
+
+
+    
 }
