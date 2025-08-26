@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Filament\Resources\EntradaInventarios\Tables;
+
+namespace App\Filament\Resources\SalidaInventarios\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -9,7 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class EntradaInventariosTable
+class SalidaInventariosTable
 {
     public static function configure(Table $table): Table
     {
@@ -28,8 +29,8 @@ class EntradaInventariosTable
                     ->label('Cantidad')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('precio_compra')
-                    ->label('Precio Compra')
+                TextColumn::make('precio_costo')
+                    ->label('Precio Costo')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('precio_venta')
@@ -39,8 +40,8 @@ class EntradaInventariosTable
                 TextColumn::make('numero_factura')
                     ->label('N° Factura')
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('numero_remision')
-                    ->label('N° Remisión')
+                TextColumn::make('observacion')
+                    ->label('Observación')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()

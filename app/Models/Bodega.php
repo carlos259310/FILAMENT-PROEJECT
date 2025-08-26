@@ -28,7 +28,7 @@ class Bodega extends Model
 
     //relaciones 
 
-    
+
     public function entradasInventario()
     {
         return $this->hasMany(EntradaInventario::class, 'id_bodega');
@@ -39,4 +39,8 @@ class Bodega extends Model
         return $this->hasMany(Inventario::class, 'id_bodega');
     }
 
+    public function salidasInventario()
+    {
+        return $this->hasMany(SalidaInventario::class, 'id_bodega');
+    }
 }

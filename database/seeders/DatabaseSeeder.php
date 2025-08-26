@@ -15,20 +15,21 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
         $this->call([
-          /*  CategoriaSeeder::class,
+            CategoriaSeeder::class,
             MarcaSeeder::class,
             ProveedorSeeder::class,
             BodegaSeeder::class,
             ProductoSeeder::class,
-            InventarioSeeder::class*/
+            InventarioSeeder::class,
+            MotivoEntradaSeeder::class
         ]);
         // Elimina todos los usuarios antes de crear el nuevo
-        \App\Models\User::where('email', 'admin@example.com')->delete();
+        User::where('email', 'admin@example.com')->delete();
 
 
         User::factory()->create([
             'name' => 'admin',
-            'email' => 'admin@example.com',
+            'email' => '    ',
             'password' => Hash::make('123456')
         ]);
     }

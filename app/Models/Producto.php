@@ -53,11 +53,19 @@ class Producto extends Model
     }
     // ...existing code...
 
-        public function inventario()
+    public function inventario()
     {
         return $this->hasMany(Inventario::class, 'id_producto');
     }
 
 
-    
+    // ...existing code...
+    public function salidasInventario()
+    {
+        return $this->hasMany(SalidaInventario::class, 'id_producto');
+    }
+    // ...existing code...
+
+
+
 }

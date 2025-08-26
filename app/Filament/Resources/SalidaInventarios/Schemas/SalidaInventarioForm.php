@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\EntradaInventarios\Schemas;
+namespace App\Filament\Resources\SalidaInventarios\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 
-class EntradaInventarioForm
+class SalidaInventarioForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -27,15 +27,13 @@ class EntradaInventarioForm
             TextInput::make('cantidad')
                 ->numeric()
                 ->required(),
-            TextInput::make('precio_compra')
+            TextInput::make('precio_costo')
                 ->numeric()
                 ->prefix('$'),
             TextInput::make('precio_venta')
                 ->numeric()
                 ->prefix('$'),
             TextInput::make('numero_factura')
-                ->maxLength(50),
-            TextInput::make('numero_remision')
                 ->maxLength(50),
             Textarea::make('observacion')
                 ->rows(3),

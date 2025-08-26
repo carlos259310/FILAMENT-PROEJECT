@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('motivos_entrada', function (Blueprint $table) {
+        Schema::create('motivos_salida', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
             
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('motivos_entrada');
+        Schema::dropIfExists('motivos_salida');
     }
 };

@@ -6,22 +6,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EntradaInventario extends Model
+class SalidaInventario extends Model
 {
     use HasFactory;
 
-    protected $table = 'entradas_inventario';
+    protected $table = 'salidas_inventario';
 
     protected $fillable = [
         'id_producto',
         'id_bodega',
         'id_motivo',
-        'id_factura',
         'cantidad',
-        'precio_compra',
+        'precio_costo',
         'precio_venta',
         'numero_factura',
-        'numero_remision',
         'observacion',
     ];
 
@@ -38,8 +36,6 @@ class EntradaInventario extends Model
 
     public function motivo()
     {
-        return $this->belongsTo(MotivoEntrada::class, 'id_motivo');
+        return $this->belongsTo(MotivoSalida::class, 'id_motivo');
     }
-
-
 }

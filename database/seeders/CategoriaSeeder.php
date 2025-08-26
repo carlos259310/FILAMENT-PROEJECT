@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Categoria;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 
 class CategoriaSeeder extends Seeder
@@ -13,6 +13,10 @@ class CategoriaSeeder extends Seeder
      */
     public function run(): void
     {
-         Categoria::factory()->count(10)->create();
+        // ...en tu seeder...
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('categorias')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Categoria::factory()->count(10)->create();
     }
 }

@@ -6,11 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MotivoEntrada extends Model
+class MotivoSalida extends Model
 {
     use HasFactory;
 
-    protected $table = 'motivos_entrada';
+    protected $table = 'motivos_salida';
     public $timestamps = false;
     protected $fillable = [
         'nombre'
@@ -19,6 +19,6 @@ class MotivoEntrada extends Model
 
     public function motivo()
     {
-        return $this->hasMany(MotivoEntrada::class, 'id_motivo');
+        return $this->hasMany(MotivoSalida::class, 'id_motivo');
     }
 }
