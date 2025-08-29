@@ -18,4 +18,9 @@ class EditSalidaInventario extends EditRecord
             DeleteAction::make(),
         ];
     }
+    //funcion redireccionar
+    protected function getRedirectUrl(): string
+    {
+        return static::$resource::getUrl('index');
+    }
 }

@@ -38,4 +38,10 @@ class CreateEntradaInventario extends CreateRecord
 
         return $entrada;
     }
+
+    //funcion redireccionar
+       protected function getRedirectUrl(): string
+    {
+        return static::$resource::getUrl('index');
+    }
 }

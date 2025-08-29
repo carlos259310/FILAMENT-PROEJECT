@@ -17,8 +17,5 @@ class MotivoEntrada extends Model
 
     ];
 
-    public function motivo()
-    {
-        return $this->hasMany(MotivoEntrada::class, 'id_motivo');
-    }
+
 }

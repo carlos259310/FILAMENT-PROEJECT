@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Filament\Resources\EntradaInventarios\Schemas;
 
 use Filament\Forms\Components\Select;
@@ -26,13 +27,30 @@ class EntradaInventarioForm
                 ->required(),
             TextInput::make('cantidad')
                 ->numeric()
-                ->required(),
+                ->required()
+                ->minValue(1)
+                ->rules(['numeric', 'min:1']),
             TextInput::make('precio_compra')
                 ->numeric()
-                ->prefix('$'),
+                ->prefix('$')
+                ->required()
+                ->minValue(1)
+                ->rules(['numeric', 'min:1']),
+
             TextInput::make('precio_venta')
                 ->numeric()
-                ->prefix('$'),
+                ->prefix('$')
+                ->required()
+                ->minValue(1)
+                ->rule(function ($get) {
+                    return function ($attribute, $value, $fail) use ($get) {
+                        $precio_compra = $get('precio_compra');
+                        if ($precio_compra !== null && $value < $precio_compra) {
+                            $fail('El precio de venta debe ser mayor o igual al precio de compra.');
+                        }
+                    };
+                }),
+
             TextInput::make('numero_factura')
                 ->maxLength(50),
             TextInput::make('numero_remision')
