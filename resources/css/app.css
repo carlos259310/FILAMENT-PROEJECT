@@ -1,4 +1,41 @@
-@import 'tailwindcss';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Estilos para Filament con fondo azul */
+.fi-sidebar {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+}
+
+.fi-topbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Estilos simples para botones */
+.fi-btn {
+    border-radius: 6px !important;
+}
+
+/* Estilos simples para inputs */
+.fi-input {
+    border-radius: 6px !important;
+}
+
+/* Estilos para el footer personalizado */
+.footer-custom {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-top: 3px solid #1e40af;
+    margin-top: 2rem;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Línea de separación del footer */
+.footer-custom .bg-gradient-to-r {
+    background: linear-gradient(to right, transparent, #1e40af, transparent);
+    height: 2px !important;
+    opacity: 0.8;
+}
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
