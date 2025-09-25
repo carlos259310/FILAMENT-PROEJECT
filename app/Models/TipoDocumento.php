@@ -3,12 +3,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TipoDocumento extends Model
 {
-    protected $table = 'tipos_documento';
-    protected $fillable = ['nombre', 'codigo', 'descripcion', 'activo'];
+
+    use HasFactory;
+    protected $table = 'tipos_documentos';
+    protected $fillable = ['documento', 'codigo', 'descripcion', 'activo'];
 
     public function clientes()
     {

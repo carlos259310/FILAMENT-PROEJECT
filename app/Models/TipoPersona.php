@@ -3,12 +3,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TipoPersona extends Model
 {
-    protected $table = 'tipos_persona';
-    protected $fillable = ['nombre'];
+       use HasFactory;
+    protected $table = 'tipos_personas';
+    protected $fillable = ['tipo_persona'];
 
     public function clientes()
     {

@@ -14,9 +14,7 @@ class CategoriaSeeder extends Seeder
     public function run(): void
     {
         // ...en tu seeder...
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('categorias')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::table('categorias')->delete();
         Categoria::factory()->count(10)->create();
     }
 }

@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             InventarioSeeder::class,
             MotivoEntradaSeeder::class,
             DepartamentosSeeder::class,
+            CiudadesSeeder::class,
+            TipoPersonaSeeder::class,
             TipoDocumentoSeeder::class
         ]);
         // Elimina todos los usuarios antes de crear el nuevo

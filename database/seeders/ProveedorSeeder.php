@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Proveedor;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProveedorSeeder extends Seeder
 {
@@ -13,6 +13,8 @@ class ProveedorSeeder extends Seeder
      */
     public function run(): void
     {
+
+         DB::table('proveedores')->delete();
          Proveedor::factory()->count(10)->create();
     }
 }
