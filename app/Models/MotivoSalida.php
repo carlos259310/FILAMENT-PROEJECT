@@ -19,6 +19,6 @@ class MotivoSalida extends Model
 
     public function motivo()
     {
-        return $this->hasMany(MotivoSalida::class, 'id_motivo');
+        return $this->hasMany(SalidaInventario::class, 'id_motivo');
     }
 }

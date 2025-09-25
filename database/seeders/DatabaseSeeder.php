@@ -6,6 +6,8 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -21,7 +23,9 @@ class DatabaseSeeder extends Seeder
             BodegaSeeder::class,
             ProductoSeeder::class,
             InventarioSeeder::class,
-            MotivoEntradaSeeder::class
+            MotivoEntradaSeeder::class,
+            DepartamentosSeeder::class,
+            TipoDocumentoSeeder::class
         ]);
         // Elimina todos los usuarios antes de crear el nuevo
         User::where('email', 'admin@example.com')->delete();

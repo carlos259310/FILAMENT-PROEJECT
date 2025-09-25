@@ -17,5 +17,8 @@ class MotivoEntrada extends Model
 
     ];
 
-
+    public function motivo()
+    {
+        return $this->hasMany(EntradaInventario::class, 'id_motivo');
+    }
 }
