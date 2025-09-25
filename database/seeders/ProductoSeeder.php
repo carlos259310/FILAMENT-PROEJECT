@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Producto;
 use Illuminate\Database\Seeder;
-
+use Illuminate\Support\Facades\DB;
 class ProductoSeeder extends Seeder
 {
     /**
@@ -12,6 +12,7 @@ class ProductoSeeder extends Seeder
      */
     public function run(): void
     {
+          DB::table('productos')->delete();
         Producto::factory()->count(10)->create();
     }
 }
