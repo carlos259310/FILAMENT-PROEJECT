@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
             DepartamentosSeeder::class,
             CiudadesSeeder::class,
             TipoPersonaSeeder::class,
-            TipoDocumentoSeeder::class
+            TipoDocumentoSeeder::class,
+            EstadoFacturaSeeder::class
         ]);
         // Elimina todos los usuarios antes de crear el nuevo
         User::where('email', 'admin@example.com')->delete();
