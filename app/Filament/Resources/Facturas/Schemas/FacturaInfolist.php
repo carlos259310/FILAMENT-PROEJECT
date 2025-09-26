@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\Facturas\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
+
+use Filament\Infolists\Components\RepeatableEntry;
+
 use Filament\Schemas\Schema;
 
 class FacturaInfolist
@@ -37,6 +40,26 @@ class FacturaInfolist
                 TextEntry::make('updated_at')
                     ->label('Actualizado')
                     ->dateTime(),
+                RepeatableEntry::make('detalles')
+                    ->label('Detalle de Productos')
+                    ->schema([
+                        TextEntry::make('producto.nombre')
+                            ->label('Producto')
+                            ->weight('bold'),
+                        TextEntry::make('bodega.nombre')
+                            ->label('Bodega'),
+                        TextEntry::make('cantidad')
+                            ->label('Cantidad')
+                            ->numeric(),
+                        TextEntry::make('precio_venta')
+                            ->label('Precio Unitario')
+                            ->money('COP'),
+                        TextEntry::make('subtotal_linea')
+                            ->label('Subtotal')
+                            ->money('COP')
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
             ]);
     }
 }

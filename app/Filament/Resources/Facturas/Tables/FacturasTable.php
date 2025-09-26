@@ -16,22 +16,21 @@ class FacturasTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
+                TextColumn::make('numero_factura')
+                    ->label('N° Factura')
                     ->sortable(),
                 TextColumn::make('cliente.nombre_1')
                     ->label('Cliente')
                     ->searchable(),
-                TextColumn::make('numero_factura')
-                    ->label('N° Factura')
-                    ->sortable(),
+
                 TextColumn::make('fecha_factura')
                     ->label('Fecha')
                     ->date(),
                 TextColumn::make('estado.nombre')
                     ->label('Estado')
                     ->badge()
-                    ->color(fn ($state) => $state === 'Pendiente' ? 'warning' : ($state === 'Pagada' ? 'success' : 'danger'),
+                    ->color(
+                        fn($state) => $state === 'Pendiente' ? 'warning' : ($state === 'Pagada' ? 'success' : 'danger'),
                     ),
                 TextColumn::make('total_factura')
                     ->label('Total')
@@ -64,7 +63,7 @@ class FacturasTable
                             ->options(\App\Models\EstadoFactura::all()->pluck('nombre', 'id'))
                             ->required(),
                     ])
-                    ->visible(fn ($record) => $record->estado->nombre === 'Pendiente')
+                    ->visible(fn($record) => $record->estado->nombre === 'Pendiente')
                     ->action(function ($record, array $data) {
                         $record->id_estado = $data['id_estado'];
                         $record->save();

@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('prefijo', 20);
             $table->string('numero_factura', 20);
             $table->date('fecha_factura');
-            $table->decimal('subtotal', 8, 2)->default(0);
-            $table->decimal('total_impuesto', 8, 2)->default(0);
-            $table->decimal('total_factura', 8, 2)->default(0);
+            $table->decimal('subtotal', 15, 2)->default(0);
+            $table->decimal('total_impuesto', 15, 2)->default(0);
+            $table->decimal('total_factura', 15, 2)->default(0);
 
 
             $table->timestamps();

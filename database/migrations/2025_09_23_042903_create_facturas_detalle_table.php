@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('impuesto', 8, 2);
             $table->bigInteger('porcentaje_impuesto');
             $table->decimal('subtotal_linea', 8, 2);
-            $table->decimal('total_linea', 8, 2);
+        $table->decimal('total_linea', 15, 2)->default(0);
             $table->timestamps();
         });
     }
