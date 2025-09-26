@@ -51,6 +51,28 @@ class FacturasTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                \Filament\Actions\Action::make('cambiar_estado')
+                    ->label('Cambiar Estado')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('primary')
+                    ->button()
+                    ->modalHeading('Cambiar estado de la factura')
+                    ->modalSubmitActionLabel('Actualizar Estado')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('id_estado')
+                            ->label('Nuevo Estado')
+                            ->options(\App\Models\EstadoFactura::all()->pluck('nombre', 'id'))
+                            ->required(),
+                    ])
+                    ->visible(fn ($record) => $record->estado->nombre === 'Pendiente')
+                    ->action(function ($record, array $data) {
+                        $record->id_estado = $data['id_estado'];
+                        $record->save();
+                        \Filament\Notifications\Notification::make()
+                            ->title('Estado actualizado')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
