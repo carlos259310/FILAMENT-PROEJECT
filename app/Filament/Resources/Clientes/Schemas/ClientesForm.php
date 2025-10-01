@@ -49,6 +49,7 @@ class ClientesForm
             TextInput::make('telefono')
                 ->maxLength(30),
             TextInput::make('direccion')
+                ->required()
                 ->maxLength(255),
             Select::make('id_departamento')
                 ->label('Departamento')
