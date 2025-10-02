@@ -14,11 +14,38 @@ class EditFactura extends EditRecord
 {
     protected static string $resource = FacturaResource::class;
 
+        protected function authorizeAccess(): void
+        {
+            parent::authorizeAccess();
+            
+            $estado = $this->record->estado->nombre;
+            
+            // No se puede editar facturas pagadas ni canceladas
+            if (in_array($estado, ['Pagada', 'Cancelada'])) {
+                abort(403, "❌ No se pueden editar facturas en estado '{$estado}'. Solo las facturas pendientes son editables.");
+            }
+        }
+
+        protected function getActions(): array
+        {
+            return [
+                \Filament\Actions\Action::make('back')
+                    ->label('Volver a las facturas')
+                    ->url(static::getResource()::getUrl('index'))
+                    ->color('secondary')
+                    ->icon('heroicon-o-arrow-left'),
+            ];
+        }
 
     protected function afterSave(): void
     {
         $factura = $this->record;
-        $motivoVenta = MotivoSalida::where('nombre', 'Venta')->first();
+        
+        // Buscar o crear el motivo "Venta"
+        $motivoVenta = MotivoSalida::firstOrCreate(
+            ['nombre' => 'Venta'],
+            ['nombre' => 'Venta']
+        );
 
         // Restaurar inventario de las salidas anteriores
         $salidasAnteriores = SalidaInventario::where('numero_factura', $factura->prefijo . $factura->numero_factura)->get();
@@ -38,25 +65,28 @@ class EditFactura extends EditRecord
 
         // Crear nuevas salidas de inventario
         foreach ($factura->detalles as $detalle) {
+            // Obtener inventario para precio de costo
+            $inventario = Inventario::where('id_bodega', $detalle->id_bodega)
+                ->where('id_producto', $detalle->id_producto)
+                ->first();
+
+            if (!$inventario) {
+                continue; // Saltar si no hay inventario
+            }
+
             SalidaInventario::create([
                 'id_bodega' => $detalle->id_bodega,
                 'id_producto' => $detalle->id_producto,
-                'id_motivo' => $motivoVenta?->id ?? 1,
+                'id_motivo' => $motivoVenta->id,
                 'cantidad' => $detalle->cantidad,
-                'precio_costo' => 0,
+                'precio_costo' => $inventario->precio_compra ?? 0,
                 'precio_venta' => $detalle->precio_venta,
                 'numero_factura' => $factura->prefijo . $factura->numero_factura,
                 'observacion' => "Salida por factura #{$factura->prefijo}{$factura->numero_factura} (editada)",
             ]);
 
             // Disminuir inventario
-            $inventario = Inventario::where('id_bodega', $detalle->id_bodega)
-                ->where('id_producto', $detalle->id_producto)
-                ->first();
-
-            if ($inventario) {
-                $inventario->decrement('cantidad', $detalle->cantidad);
-            }
+            $inventario->decrement('cantidad', $detalle->cantidad);
         }
     }
 
@@ -65,6 +95,7 @@ class EditFactura extends EditRecord
         return [
             ViewAction::make(),
             DeleteAction::make()
+                ->visible(fn () => $this->record->estado->nombre === 'Pendiente')
                 ->before(function () {
                     // Restaurar inventario al eliminar factura
                     $factura = $this->record;

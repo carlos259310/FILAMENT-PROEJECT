@@ -37,4 +37,9 @@ class Cliente extends Model
     {
         return $this->belongsTo(Departamento::class, 'id_departamento');
     }
+
+    public function facturas()
+    {
+        return $this->hasMany(Factura::class, 'id_cliente', 'id_cliente');
+    }
 }

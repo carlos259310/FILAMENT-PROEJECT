@@ -17,10 +17,40 @@ class FacturaForm
         return $schema->schema([
             Select::make('id_cliente')
                 ->label('Cliente')
-                ->relationship('cliente', 'nombre_1')
-                ->searchable()
+                ->relationship(
+                    name: 'cliente',
+                    titleAttribute: 'nombre_1',
+                    modifyQueryUsing: fn ($query) => $query
+                        ->where('activo', true)
+                        ->orderBy('nombre_1')
+                )
+                ->getOptionLabelFromRecordUsing(function ($record) {
+                    // Si es persona natural
+                    if ($record->id_tipo_persona == 1 || !$record->razon_social) {
+                        $nombreCompleto = trim(
+                            ($record->nombre_1 ?? '') . ' ' . 
+                            ($record->nombre_2 ?? '') . ' ' . 
+                            ($record->apellido_1 ?? '') . ' ' . 
+                            ($record->apellido_2 ?? '')
+                        );
+                        return sprintf(
+                            '%s - %s',
+                            $record->numero_documento ?? 'N/A',
+                            $nombreCompleto
+                        );
+                    }
+                    // Si es persona jurídica (empresa)
+                    return sprintf(
+                        '%s - %s',
+                        $record->numero_documento ?? 'N/A',
+                        $record->razon_social ?? $record->nombre_1
+                    );
+                })
+                ->searchable(['nombre_1', 'apellido_1', 'numero_documento', 'razon_social'])
+                ->preload()
                 ->required()
-                ->placeholder('Seleccione un cliente'),
+                ->placeholder('🔍 Buscar cliente por documento o nombre')
+                ->helperText('Solo se muestran clientes activos'),
 
             TextInput::make('prefijo')
                 ->label('Prefijo')
@@ -39,19 +69,39 @@ class FacturaForm
                 ->default(now()),
 
             Repeater::make('detalles')
-                ->label('📦 Productos de la Factura')
+                ->label('Productos de la Factura')
                 ->relationship('detalles')
                 ->schema([
                     Select::make('id_bodega')
                         ->label('Bodega')
-                        ->relationship('bodega', 'nombre')
+                        ->relationship(
+                            name: 'bodega',
+                            titleAttribute: 'nombre',
+                            modifyQueryUsing: fn($query) => $query
+                                ->whereHas('inventario', function ($q) {
+                                    $q->where('cantidad', '>', 0);
+                                })
+                                ->withCount(['inventario as productos_disponibles' => function ($q) {
+                                    $q->where('cantidad', '>', 0);
+                                }])
+                                ->orderBy('nombre')
+                        )
+                        ->getOptionLabelFromRecordUsing(fn($record) => sprintf(
+                            '%s (%d productos)',
+                            $record->nombre,
+                            $record->productos_disponibles ?? 0
+                        ))
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->reactive()
-                        ->placeholder('Seleccione bodega')
+                        ->placeholder('Seleccione bodega con stock')
+                        ->helperText('Solo se muestran bodegas con productos disponibles')
                         ->afterStateUpdated(function ($set) {
                             $set('id_producto', null);
                             $set('cantidad_disponible', 0);
                             $set('precio_venta', 0);
+                            $set('cantidad', 1);
                         }),
 
                     Select::make('id_producto')
@@ -97,9 +147,9 @@ class FacturaForm
                                     $set('cantidad_disponible', $inventario->cantidad);
                                     $set('precio_venta', $inventario->precio_venta ?? 0);
                                     $set('cantidad', 1); // Cantidad por defecto
-                                    
+
                                     // Trigger cálculo inmediato
-                                    self::calcularTotales($set, function($key) use ($get, $inventario) {
+                                    self::calcularTotales($set, function ($key) use ($get, $inventario) {
                                         if ($key === 'cantidad') return 1;
                                         if ($key === 'precio_venta') return $inventario->precio_venta ?? 0;
                                         return $get($key);
@@ -215,9 +265,9 @@ class FacturaForm
                         ->columnSpanFull(),
                 ])
                 ->columns(3)
-                ->createItemButtonLabel('➕ Agregar Producto')
+                ->createItemButtonLabel('Agregar Producto')
                 ->deleteAction(
-                    fn ($action) => $action->requiresConfirmation()->label('🗑️')
+                    fn($action) => $action->requiresConfirmation()->label('🗑️')
                 )
                 ->reorderable()
                 ->collapsible()
@@ -231,7 +281,7 @@ class FacturaForm
                 ->addActionLabel('Agregar otro producto'),
 
             TextInput::make('subtotal')
-                ->label('💵 Subtotal')
+                ->label('Subtotal')
                 ->numeric()
                 ->prefix('$')
                 ->readOnly()
@@ -239,7 +289,7 @@ class FacturaForm
                 ->default(0),
 
             TextInput::make('total_impuesto')
-                ->label('💵 Total Impuestos (IVA)')
+                ->label('Total Impuestos (IVA)')
                 ->numeric()
                 ->prefix('$')
                 ->readOnly()

@@ -26,30 +26,38 @@ class CreateFactura extends CreateRecord
     protected function afterCreate(): void
     {
         $factura = $this->record;
-        $motivoVenta = MotivoSalida::where('nombre', 'Venta')->first();
+        
+        // Buscar o crear el motivo "Venta"
+        $motivoVenta = MotivoSalida::firstOrCreate(
+            ['nombre' => 'Venta'],
+            ['nombre' => 'Venta']
+        );
 
         // Crear salidas de inventario para cada detalle de la factura
         foreach ($factura->detalles as $detalle) {
+            // Obtener inventario para precio de costo
+            $inventario = Inventario::where('id_bodega', $detalle->id_bodega)
+                ->where('id_producto', $detalle->id_producto)
+                ->first();
+
+            if (!$inventario) {
+                continue; // Saltar si no hay inventario
+            }
+
             // Crear registro de salida
             SalidaInventario::create([
                 'id_bodega' => $detalle->id_bodega,
                 'id_producto' => $detalle->id_producto,
-                'id_motivo' => $motivoVenta?->id ?? 1,
+                'id_motivo' => $motivoVenta->id,
                 'cantidad' => $detalle->cantidad,
-                'precio_costo' => 0, // Se podría obtener del inventario si es necesario
+                'precio_costo' => $inventario->precio_compra ?? 0,
                 'precio_venta' => $detalle->precio_venta,
                 'numero_factura' => $factura->prefijo . $factura->numero_factura,
                 'observacion' => "Salida por factura #{$factura->prefijo}{$factura->numero_factura}",
             ]);
 
             // Actualizar inventario (disminuir cantidad)
-            $inventario = Inventario::where('id_bodega', $detalle->id_bodega)
-                ->where('id_producto', $detalle->id_producto)
-                ->first();
-
-            if ($inventario) {
-                $inventario->decrement('cantidad', $detalle->cantidad);
-            }
+            $inventario->decrement('cantidad', $detalle->cantidad);
         }
     }
 
