@@ -73,7 +73,7 @@ class FacturaForm
                 ->relationship('detalles')
                 ->schema([
                     Select::make('id_bodega')
-                        ->label('Bodega')
+                        ->label('Bodega') 
                         ->relationship(
                             name: 'bodega',
                             titleAttribute: 'nombre',
