@@ -20,6 +20,7 @@ class EntradaInventarioResource extends Resource
 {
     protected static ?string $model = EntradaInventario::class;
 
+       protected static string|\UnitEnum|null $navigationGroup = 'Inventarios';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'EntradaInventario';

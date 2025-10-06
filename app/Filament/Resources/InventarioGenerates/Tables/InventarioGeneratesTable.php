@@ -46,7 +46,7 @@ class InventarioGeneratesTable
                 TextColumn::make('precio_compra')
                     ->label('Precio Compra')
                     ->money('COP')
-                    ->sortable(),
+                    ->sortable(),   
                 TextColumn::make('precio_venta')
                     ->label('Precio Venta')
                     ->money('COP')

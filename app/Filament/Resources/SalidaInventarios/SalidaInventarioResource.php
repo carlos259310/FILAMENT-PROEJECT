@@ -20,6 +20,7 @@ class SalidaInventarioResource extends Resource
 {
     protected static ?string $model = SalidaInventario::class;
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Inventarios';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'SalidaInventario';

@@ -13,6 +13,24 @@ class EntradaInventarioForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->schema([
+            TextInput::make('codigo')
+                ->label('Código')
+                ->disabled()
+                ->dehydrated()
+                ->default(function () {
+                    $ultimaEntrada = \App\Models\EntradaInventario::latest()->first();
+                    $ultimoId = $ultimaEntrada ? $ultimaEntrada->id : 0;
+                    return str_pad($ultimoId + 1, 5, '0', STR_PAD_LEFT);
+                }),
+
+            TextInput::make('codigo_barras')
+                ->label('Código de Barras')
+                ->disabled()
+                ->dehydrated()
+                ->default(function () {
+                    return date('Ymd') . rand(1000, 9999);
+                }),
+
             Select::make('id_producto')
                 ->label('Producto')
                 ->relationship('producto', 'nombre')

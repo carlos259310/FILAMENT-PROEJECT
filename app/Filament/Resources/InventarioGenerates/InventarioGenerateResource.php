@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\InventarioGenerates;
 
-use App\Filament\Resources\InventarioGenerates\Pages\CreateInventarioGenerate;
-use App\Filament\Resources\InventarioGenerates\Pages\EditInventarioGenerate;
 use App\Filament\Resources\InventarioGenerates\Pages\ListInventarioGenerates;
 use App\Filament\Resources\InventarioGenerates\Pages\ViewInventarioGenerate;
 use App\Filament\Resources\InventarioGenerates\Schemas\InventarioGenerateForm;
@@ -20,15 +18,15 @@ use Filament\Tables\Table;
 class InventarioGenerateResource extends Resource
 {
     protected static ?string $model = Inventario::class;
-
+    protected static string|\UnitEnum|null $navigationGroup = 'Inventarios';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'producto.nombre';
-    
+
     protected static ?string $navigationLabel = 'Inventario';
-    
+
     protected static ?string $modelLabel = 'Inventario';
-    
+
     protected static ?string $pluralModelLabel = 'Inventarios';
 
     public static function form(Schema $schema): Schema

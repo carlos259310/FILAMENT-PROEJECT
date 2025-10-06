@@ -44,4 +44,20 @@ class Inventario extends Model
     {
         return $this->belongsTo(Bodega::class, 'id_bodega');
     }
+
+    // Scopes útiles
+    public function scopeConStock($query)
+    {
+        return $query->where('cantidad', '>', 0);
+    }
+
+    public function scopePorBodega($query, $bodegaId)
+    {
+        return $query->where('id_bodega', $bodegaId);
+    }
+
+    public function scopeConProducto($query)
+    {
+        return $query->with('producto');
+    }
 }

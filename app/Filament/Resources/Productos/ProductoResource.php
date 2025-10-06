@@ -20,6 +20,7 @@ class ProductoResource extends Resource
 {
     protected static ?string $model = Producto::class;
 
+       protected static string|\UnitEnum|null $navigationGroup = 'Inventarios';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Producto';

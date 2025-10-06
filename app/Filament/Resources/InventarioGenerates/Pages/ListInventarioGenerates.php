@@ -17,14 +17,16 @@ class ListInventarioGenerates extends ListRecords
     {
         return [
             Action::make('crear_entrada')
-                ->label('📥 Crear Entrada')
+                ->label('Crear Entrada')
+                ->icon('heroicon-o-arrow-down-on-square')
                 ->icon(Heroicon::OutlinedArrowDownTray)
                 ->color('success')
                 ->url(fn (): string => EntradaInventarioResource::getUrl('create'))
                 ->tooltip('Registrar entrada de productos al inventario'),
             
             Action::make('crear_salida')
-                ->label('📤 Crear Salida')
+                ->label('Crear Salida')
+                ->icon('heroicon-o-arrow-up-on-square')
                 ->icon(Heroicon::OutlinedArrowUpTray)
                 ->color('danger')
                 ->url(fn (): string => SalidaInventarioResource::getUrl('create'))
