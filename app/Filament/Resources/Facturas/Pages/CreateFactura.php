@@ -20,7 +20,23 @@ class CreateFactura extends CreateRecord
         $estadoPendiente = EstadoFactura::where('nombre', 'Pendiente')->first();
         $data['id_estado'] = $estadoPendiente?->id ?? 1;
         
+        // Generar número de factura automático si no existe
+        if (empty($data['numero_factura'])) {
+            $data['numero_factura'] = $this->generarNumeroFactura();
+        }
+        
         return $data;
+    }
+
+    /**
+     * Generar número de factura automático
+     * Formato: 00000000 (8 dígitos con ceros a la izquierda)
+     */
+    private function generarNumeroFactura(): string
+    {
+        $ultimaFactura = \App\Models\Factura::latest('id')->first();
+        $nuevoId = $ultimaFactura ? $ultimaFactura->id + 1 : 1;
+        return str_pad($nuevoId, 8, '0', STR_PAD_LEFT);
     }
 
     protected function afterCreate(): void

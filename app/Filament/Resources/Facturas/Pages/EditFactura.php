@@ -22,7 +22,7 @@ class EditFactura extends EditRecord
             
             // No se puede editar facturas pagadas ni canceladas
             if (in_array($estado, ['Pagada', 'Cancelada'])) {
-                abort(403, "❌ No se pueden editar facturas en estado '{$estado}'. Solo las facturas pendientes son editables.");
+                abort(403, "No se pueden editar facturas en estado '{$estado}'. Solo las facturas pendientes son editables.");
             }
         }
 

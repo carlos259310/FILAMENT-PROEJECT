@@ -46,20 +46,69 @@ class ListFacturas extends ListRecords
                         ->send();
                 }),
             Action::make('anular_factura')
-                ->label('Anular')
+                ->label('Anular Factura')
                 ->icon('heroicon-o-x-mark')
+                ->color('danger')
                 ->requiresConfirmation()
+                ->modalHeading('¿Anular esta factura?')
+                ->modalDescription('Esta acción generará una devolución de inventario automáticamente.')
+                ->modalSubmitActionLabel('Sí, anular factura')
                 ->visible(fn ($record) => $record->estado->nombre === 'Pagada')
                 ->action(function ($record) {
                     $estadoCancelada = EstadoFactura::where('nombre', 'Cancelada')->first();
-                    if ($estadoCancelada) {
-                        $record->id_estado = $estadoCancelada->id;
-                        $record->save();
+                    if (!$estadoCancelada) {
                         \Filament\Notifications\Notification::make()
-                            ->title('Factura anulada')
-                            ->success()
+                            ->title('Error: Estado "Cancelada" no encontrado')
+                            ->danger()
                             ->send();
+                        return;
                     }
+
+                    // Buscar o crear el motivo "Devolución"
+                    $motivoDevolucion = \App\Models\MotivoEntrada::firstOrCreate(
+                        ['nombre' => 'Devolución'],
+                        ['nombre' => 'Devolución']
+                    );
+
+                    // Obtener las salidas de inventario de esta factura
+                    $salidas = \App\Models\SalidaInventario::where(
+                        'numero_factura',
+                        $record->prefijo . $record->numero_factura
+                    )->get();
+
+                    // Crear entradas de devolución y restaurar inventario
+                    foreach ($salidas as $salida) {
+                        // Crear entrada de devolución
+                        \App\Models\EntradaInventario::create([
+                            'id_producto' => $salida->id_producto,
+                            'id_bodega' => $salida->id_bodega,
+                            'id_motivo' => $motivoDevolucion->id,
+                            'cantidad' => $salida->cantidad,
+                            'precio_compra' => $salida->precio_costo,
+                            'precio_venta' => $salida->precio_venta,
+                            'numero_factura' => $record->prefijo . $record->numero_factura,
+                            'observacion' => "Devolución por anulación de factura #{$record->prefijo}{$record->numero_factura}",
+                        ]);
+
+                        // Restaurar inventario
+                        $inventario = \App\Models\Inventario::where('id_bodega', $salida->id_bodega)
+                            ->where('id_producto', $salida->id_producto)
+                            ->first();
+
+                        if ($inventario) {
+                            $inventario->increment('cantidad', $salida->cantidad);
+                        }
+                    }
+
+                    // Cambiar estado a Cancelada
+                    $record->id_estado = $estadoCancelada->id;
+                    $record->save();
+
+                    \Filament\Notifications\Notification::make()
+                        ->title('Factura anulada correctamente')
+                        ->body('Se ha generado la devolución de inventario automáticamente.')
+                        ->success()
+                        ->send();
                 }),
         ];
     }

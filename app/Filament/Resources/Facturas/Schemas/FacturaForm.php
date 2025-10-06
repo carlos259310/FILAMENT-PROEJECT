@@ -49,24 +49,35 @@ class FacturaForm
                 ->searchable(['nombre_1', 'apellido_1', 'numero_documento', 'razon_social'])
                 ->preload()
                 ->required()
-                ->placeholder('🔍 Buscar cliente por documento o nombre')
+                ->native(false)
+                ->placeholder('Buscar cliente por documento o nombre')
+                ->suffixIcon('heroicon-o-magnifying-glass')
                 ->helperText('Solo se muestran clientes activos'),
 
             TextInput::make('prefijo')
                 ->label('Prefijo')
                 ->required()
                 ->default('INV')
-                ->placeholder('Ej: INV'),
+                ->readOnly()
+                ->prefixIcon('heroicon-o-hashtag')
+                ->placeholder('INV'),
 
             TextInput::make('numero_factura')
                 ->label('Número de Factura')
-                ->required()
-                ->placeholder('Número único de factura'),
+                ->disabled()
+                ->dehydrated()
+                ->default(fn () => self::generarNumeroFactura())
+                ->prefixIcon('heroicon-o-document-text')
+                ->helperText('Se genera automáticamente'),
 
             DatePicker::make('fecha_factura')
                 ->label('Fecha de Factura')
                 ->required()
-                ->default(now()),
+                ->native(false)
+                ->displayFormat('d/m/Y')
+                ->default(now())
+                ->prefixIcon('heroicon-o-calendar-days')
+                ->closeOnDateSelection(),
 
             Repeater::make('detalles')
                 ->label('Productos de la Factura')
@@ -93,10 +104,11 @@ class FacturaForm
                         ))
                         ->required()
                         ->searchable()
+                        ->native(false)
                         ->preload()
                         ->reactive()
-                        ->placeholder('Seleccione bodega con stock')
-                        ->helperText('Solo se muestran bodegas con productos disponibles')
+                        ->prefixIcon('heroicon-o-building-storefront')
+                        ->placeholder('Seleccione bodega')
                         ->afterStateUpdated(function ($set) {
                             $set('id_producto', null);
                             $set('cantidad_disponible', 0);
@@ -118,7 +130,7 @@ class FacturaForm
                                 ->mapWithKeys(function ($inv) {
                                     $producto = $inv->producto;
                                     $label = sprintf(
-                                        '%s - %s (Stock: %d) - $%s',
+                                        '%s - %s | Stock: %d | $%s',
                                         $producto->codigo ?? 'N/A',
                                         $producto->nombre,
                                         $inv->cantidad,
@@ -131,10 +143,11 @@ class FacturaForm
                         ->required()
                         ->reactive()
                         ->searchable()
+                        ->native(false)
                         ->preload()
                         ->live(onBlur: true)
-                        ->placeholder('🔍 Buscar por código o nombre...')
-                        ->helperText('Escriba para filtrar productos disponibles')
+                        ->prefixIcon('heroicon-o-cube')
+                        ->placeholder('Buscar por código o nombre')
                         ->afterStateUpdated(function ($set, $get, $state) {
                             $bodegaId = $get('id_bodega');
                             if ($bodegaId && $state) {
@@ -162,10 +175,12 @@ class FacturaForm
                         }),
 
                     TextInput::make('cantidad_disponible')
-                        ->label('Cantidad Disponible')
+                        ->label('Stock Disponible')
                         ->disabled()
                         ->reactive()
                         ->dehydrated(false)
+                        ->prefixIcon('heroicon-o-archive-box')
+                        ->suffix('unidades')
                         ->default(function ($get) {
                             $bodegaId = $get('id_bodega');
                             $productoId = $get('id_producto');
@@ -187,6 +202,7 @@ class FacturaForm
                         ->minValue(1)
                         ->step(1)
                         ->inputMode('numeric')
+                        ->prefixIcon('heroicon-o-calculator')
                         ->rules([
                             function ($get) {
                                 return function ($attribute, $value, $fail) use ($get) {
@@ -198,7 +214,7 @@ class FacturaForm
                                             ->first();
                                         $stock = $inventario ? $inventario->cantidad : 0;
                                         if ($value > $stock) {
-                                            $fail("⚠️ Stock insuficiente. Disponible: {$stock} unidades.");
+                                            $fail("Stock insuficiente. Disponible: {$stock} unidades.");
                                         }
                                     }
                                 };
@@ -217,6 +233,7 @@ class FacturaForm
                         ->minValue(0)
                         ->step(0.01)
                         ->inputMode('decimal')
+                        ->prefixIcon('heroicon-o-currency-dollar')
                         ->live(debounce: 500)
                         ->afterStateUpdated(function ($set, $get) {
                             self::calcularTotales($set, $get);
@@ -229,6 +246,7 @@ class FacturaForm
                         ->suffix('%')
                         ->step(0.01)
                         ->inputMode('decimal')
+                        ->prefixIcon('heroicon-o-receipt-percent')
                         ->live(debounce: 500)
                         ->afterStateUpdated(function ($set, $get) {
                             self::calcularTotales($set, $get);
@@ -265,11 +283,11 @@ class FacturaForm
                         ->columnSpanFull(),
                 ])
                 ->columns(3)
-                ->createItemButtonLabel('Agregar Producto')
+                ->addActionLabel('Agregar Producto')
                 ->deleteAction(
-                    fn($action) => $action->requiresConfirmation()->label('🗑️')
+                    fn($action) => $action->requiresConfirmation()->icon('heroicon-o-trash')
                 )
-                ->reorderable()
+                ->reorderableWithButtons()
                 ->collapsible()
                 ->cloneable()
                 ->columnSpanFull()
@@ -278,13 +296,14 @@ class FacturaForm
                     self::calcularTotalesFactura($set, $state);
                 })
                 ->defaultItems(1)
-                ->addActionLabel('Agregar otro producto'),
+                ->itemLabel(fn (array $state): ?string => $state['id_producto'] ? 'Producto #' . ($state['id_producto'] ?? '') : 'Nuevo Producto'),
 
             TextInput::make('subtotal')
                 ->label('Subtotal')
                 ->numeric()
                 ->prefix('$')
                 ->readOnly()
+                ->prefixIcon('heroicon-o-calculator')
                 ->extraAttributes(['class' => 'font-bold text-lg'])
                 ->default(0),
 
@@ -293,15 +312,17 @@ class FacturaForm
                 ->numeric()
                 ->prefix('$')
                 ->readOnly()
+                ->prefixIcon('heroicon-o-receipt-percent')
                 ->extraAttributes(['class' => 'font-bold text-lg'])
                 ->default(0),
 
             TextInput::make('total_factura')
-                ->label('💰 TOTAL FACTURA')
+                ->label('TOTAL FACTURA')
                 ->numeric()
                 ->prefix('$')
                 ->required()
                 ->readOnly()
+                ->prefixIcon('heroicon-o-banknotes')
                 ->extraAttributes(['class' => 'font-bold text-2xl text-green-600'])
                 ->default(0),
         ]);
@@ -348,5 +369,16 @@ class FacturaForm
         $set('subtotal', round($subtotal, 2));
         $set('total_impuesto', round($totalImpuesto, 2));
         $set('total_factura', round($totalFactura, 2));
+    }
+
+    /**
+     * Generar número de factura automático
+     * Formato: 0000 + ID incremental
+     */
+    private static function generarNumeroFactura(): string
+    {
+        $ultimaFactura = \App\Models\Factura::latest('id')->first();
+        $nuevoId = $ultimaFactura ? $ultimaFactura->id + 1 : 1;
+        return str_pad($nuevoId, 8, '0', STR_PAD_LEFT);
     }
 }
