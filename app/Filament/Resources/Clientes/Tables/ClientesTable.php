@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Filament\Resources\Clientes\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -18,45 +17,82 @@ class ClientesTable
     {
         return $table
             ->columns([
-                TextColumn::make('nombre_1')
-                    ->label('Primer Nombre')
+                TextColumn::make('tipoPersona.tipo_persona')
+                    ->label('Tipo')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Natural' => 'success',
+                        'Jurídica' => 'info',
+                        default => 'gray',
+                    })
+                    ->sortable()
                     ->searchable(),
-                TextColumn::make('apellido_1')
-                    ->label('Primer Apellido')
-                    ->searchable(),
-                TextColumn::make('razon_social')
-                    ->label('Razón Social')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('tipoDocumento.nombre')
-                    ->label('Tipo Documento')
+                
+                TextColumn::make('nombre_completo')
+                    ->label('Nombre / Razón Social')
+                    ->searchable(['nombre_1', 'apellido_1', 'razon_social'])
+                    ->getStateUsing(function ($record) {
+                        if ($record->tipoPersona->tipo_persona === 'Natural') {
+                            $nombre = trim($record->nombre_1 . ' ' . ($record->nombre_2 ?? ''));
+                            $apellido = trim($record->apellido_1 . ' ' . ($record->apellido_2 ?? ''));
+                            return trim($nombre . ' ' . $apellido);
+                        }
+                        return $record->razon_social;
+                    })
                     ->sortable(),
+                
+                TextColumn::make('tipoDocumento.documento')
+                    ->label('Tipo Documento')
+                    ->sortable()
+                    ->toggleable(),
+                
                 TextColumn::make('numero_documento')
                     ->label('N° Documento')
-                    ->searchable(),
-                TextColumn::make('tipoPersona.nombre')
-                    ->label('Tipo Persona')
-                    ->sortable(),
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('Documento copiado')
+                    ->copyMessageDuration(1500),
+                
+                TextColumn::make('telefono')
+                    ->label('Teléfono')
+                    ->searchable()
+                    ->icon('heroicon-o-phone')
+                    ->copyable(),
+                
+                TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->icon('heroicon-o-envelope')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->copyable(),
+                
                 TextColumn::make('departamento.nombre')
                     ->label('Departamento')
-                    ->sortable(),
-                TextColumn::make('ciudad.nombre')
-                    ->label('Ciudad')
-                    ->sortable(),
-                TextColumn::make('email')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('telefono')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('activo')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                
+                TextColumn::make('ciudad.nombre')
+                    ->label('Ciudad')
+                    ->sortable()
+                    ->searchable(),
+                
+                IconColumn::make('activo')
+                    ->label('Estado')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
+                
+                TextColumn::make('created_at')
+                    ->label('Fecha Creación')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Última Actualización')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -69,6 +105,7 @@ class ClientesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }
