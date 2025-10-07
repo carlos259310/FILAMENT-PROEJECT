@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Reportes\Pages;
 
-use App\Filament\Resources\Reportes\ReportesResource;
+use App\Filament\Resources\Reportes\ReportesVentasResource;
 use App\Models\Factura;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class VentasReport extends ListRecords
 {
-    protected static string $resource = ReportesResource::class;
+    protected static string $resource = ReportesVentasResource::class;
     
     protected static ?string $title = 'Reportes de Ventas';
     

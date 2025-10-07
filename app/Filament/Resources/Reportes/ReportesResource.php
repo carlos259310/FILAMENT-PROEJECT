@@ -8,17 +8,17 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 
-class ReportesResource extends Resource
+class ReportesVentasResource extends Resource
 {
     protected static ?string $model = Factura::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static ?string $navigationLabel = 'Reportes';
+    protected static ?string $navigationLabel = 'Reportes de Ventas';
     
-    protected static ?string $modelLabel = 'Reporte';
+    protected static ?string $modelLabel = 'Reporte de Ventas';
     
-    protected static ?string $pluralModelLabel = 'Reportes';
+    protected static ?string $pluralModelLabel = 'Reportes de Ventas';
     
     protected static ?int $navigationSort = 100;
 
