@@ -18,6 +18,9 @@ class FacturaResource extends Resource
 {
     protected static ?string $model = Factura::class;
 
+
+    
+    protected static string|\UnitEnum|null $navigationGroup = 'Ventas';
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Schema $schema): Schema

@@ -11,6 +11,8 @@ use Filament\Support\Icons\Heroicon;
 class ReportesInventarioResource extends Resource
 {
     protected static ?string $model = Inventario::class;
+    // Agrupa este recurso bajo el menú "Reportes"
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCubeTransparent;
 

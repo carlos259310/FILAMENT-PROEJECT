@@ -12,14 +12,18 @@ class ReportesClientesResource extends Resource
 {
     protected static ?string $model = Cliente::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
+
+    // Agrupa este recurso bajo el menú "Reportes"
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
     protected static ?string $navigationLabel = 'Reportes de Clientes';
-    
+
     protected static ?string $modelLabel = 'Reporte de Cliente';
-    
+
     protected static ?string $pluralModelLabel = 'Reportes de Clientes';
-    
+
     protected static ?int $navigationSort = 101;
 
     public static function getPages(): array
@@ -28,7 +32,7 @@ class ReportesClientesResource extends Resource
             'index' => ClientesReport::route('/'),
         ];
     }
-    
+
     public static function canCreate(): bool
     {
         return false;

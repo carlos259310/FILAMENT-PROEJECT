@@ -12,14 +12,17 @@ class ReportesSalidasResource extends Resource
 {
     protected static ?string $model = SalidaInventario::class;
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
+
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowUpTray;
 
     protected static ?string $navigationLabel = 'Reportes de Salidas';
-    
+
     protected static ?string $modelLabel = 'Reporte de Salidas';
-    
+
     protected static ?string $pluralModelLabel = 'Reportes de Salidas';
-    
+
     protected static ?int $navigationSort = 104;
 
     public static function getPages(): array
@@ -28,7 +31,7 @@ class ReportesSalidasResource extends Resource
             'index' => SalidasReport::route('/'),
         ];
     }
-    
+
     public static function canCreate(): bool
     {
         return false;
