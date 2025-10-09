@@ -4,63 +4,43 @@ namespace App\Filament\Resources\EntradaInventarios\Pages;
 
 use App\Filament\Resources\EntradaInventarios\EntradaInventarioResource;
 use Filament\Resources\Pages\CreateRecord;
-use App\Models\Inventario;
+use Filament\Notifications\Notification;
 
 class CreateEntradaInventario extends CreateRecord
 {
     protected static string $resource = EntradaInventarioResource::class;
 
-    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    /**
+     * Mensaje de éxito personalizado
+     */
+    protected function getCreatedNotificationTitle(): ?string
     {
-        // Generar códigos automáticos si no están presentes
-        if (empty($data['codigo'])) {
-            $ultimaEntrada = static::getModel()::latest()->first();
-            $ultimoId = $ultimaEntrada ? $ultimaEntrada->id : 0;
-            $data['codigo'] = str_pad($ultimoId + 1, 5, '0', STR_PAD_LEFT);
-        }
-        
-        if (empty($data['codigo_barras'])) {
-            $data['codigo_barras'] = date('Ymd') . rand(1000, 9999);
-        }
-
-        // Crear la entrada
-        $entrada = static::getModel()::create($data);
-
-        // Buscar o crear inventario
-        $inventario = Inventario::firstOrNew([
-            'id_bodega' => $data['id_bodega'],
-            'id_producto' => $data['id_producto']
-        ]);
-
-        if ($inventario->exists) {
-            // Inventario existente: calcular nuevo promedio ponderado
-            $cantidadAnterior = $inventario->cantidad ?? 0;
-            $precioAnterior = $inventario->precio_compra ?? 0;
-            $cantidadNueva = $data['cantidad'];
-            $precioNuevo = $data['precio_compra'];
-            
-            $totalCantidad = $cantidadAnterior + $cantidadNueva;
-            $nuevoPrecioPromedio = $totalCantidad > 0 ? 
-                (($cantidadAnterior * $precioAnterior) + ($cantidadNueva * $precioNuevo)) / $totalCantidad : 0;
-
-            $inventario->cantidad = $totalCantidad;
-            $inventario->precio_compra = $precioNuevo;
-            $inventario->precio_venta = $data['precio_venta'] ?? $inventario->precio_venta;
-            $inventario->precio_compra_promedio = $nuevoPrecioPromedio;
-        } else {
-            // Inventario nuevo
-            $inventario->cantidad = $data['cantidad'];
-            $inventario->precio_compra = $data['precio_compra'];
-            $inventario->precio_venta = $data['precio_venta'] ?? 0;
-            $inventario->precio_compra_promedio = $data['precio_compra'];
-            $inventario->precio_venta_promedio = $data['precio_venta'] ?? 0;
-        }
-        
-        $inventario->save();
-
-        return $entrada;
+        return '✅ Entrada de Inventario Registrada';
     }
 
+    /**
+     * Notificación personalizada con más información
+     */
+    protected function afterCreate(): void
+    {
+        $entrada = $this->record;
+        
+        Notification::make()
+            ->success()
+            ->title('Entrada Registrada Exitosamente')
+            ->body(
+                "Producto: {$entrada->producto->nombre}\n" .
+                "Bodega: {$entrada->bodega->nombre}\n" .
+                "Cantidad: {$entrada->cantidad} unidades\n" .
+                "💰 Total: $" . number_format($entrada->cantidad * $entrada->precio_compra, 2)
+            )
+            ->duration(5000)
+            ->send();
+    }
+
+    /**
+     * Redirección después de crear
+     */
     protected function getRedirectUrl(): string
     {
         return static::$resource::getUrl('index');

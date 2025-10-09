@@ -8,9 +8,12 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 
-class ReportesVentasResource extends Resource
+class ReportesResource extends Resource
 {
     protected static ?string $model = Factura::class;
+
+    // Agrupa este recurso bajo el menú "Reportes"
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 

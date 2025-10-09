@@ -29,6 +29,62 @@ class Producto extends Model
         'activo' => 'boolean',
     ];
 
+    /**
+     * Boot del modelo para generar códigos automáticos
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($producto) {
+            // Generar código automático si no se proporciona
+            if (empty($producto->codigo)) {
+                $producto->codigo = self::generarCodigo();
+            }
+
+            // Generar código de barras automático si no se proporciona
+            if (empty($producto->codigo_barras)) {
+                $producto->codigo_barras = self::generarCodigoBarras();
+            }
+        });
+    }
+
+    /**
+     * Genera un código único para el producto
+     * Formato: P-YYMMDDHHMM-RND (17 caracteres)
+     * 
+     * @return string
+     */
+    private static function generarCodigo(): string
+    {
+        // Formato compacto: YY+MM+DD+HH+MM (10 dígitos)
+        $timestamp = now()->format('ymdHi');
+        
+        // Random de 3 caracteres
+        $random = strtoupper(substr(uniqid(), -3));
+        
+        // P-YYMMDDHHMM-RND = 17 caracteres total
+        return "P-{$timestamp}-{$random}";
+    }
+
+    /**
+     * Genera un código de barras único en formato EAN-13 simulado
+     * Formato: 7YYMMDDHHMMSS (13 dígitos)
+     * 
+     * @return string
+     */
+    private static function generarCodigoBarras(): string
+    {
+        // Prefijo 7 para productos internos
+        $prefijo = '7';
+        
+        // Fecha y hora: YYMMDDHHMMSS (12 dígitos)
+        $timestamp = now()->format('ymdHis');
+        
+        // Código de 13 dígitos
+        return $prefijo . $timestamp;
+    }
+
 
     //relaciones
     public function categoria(): BelongsTo
