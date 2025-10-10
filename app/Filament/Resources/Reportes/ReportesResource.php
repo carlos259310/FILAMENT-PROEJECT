@@ -7,6 +7,7 @@ use App\Models\Factura;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Gate;
 
 class ReportesResource extends Resource
 {
@@ -24,6 +25,11 @@ class ReportesResource extends Resource
     protected static ?string $pluralModelLabel = 'Reportes de Ventas';
     
     protected static ?int $navigationSort = 100;
+
+    public static function canAccess(): bool
+    {
+        return Gate::allows('access-reportes');
+    }
 
     public static function getPages(): array
     {

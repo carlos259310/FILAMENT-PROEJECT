@@ -7,6 +7,7 @@ use App\Models\SalidaInventario;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Gate;
 
 class ReportesSalidasResource extends Resource
 {
@@ -24,6 +25,11 @@ class ReportesSalidasResource extends Resource
     protected static ?string $pluralModelLabel = 'Reportes de Salidas';
 
     protected static ?int $navigationSort = 104;
+
+    public static function canAccess(): bool
+    {
+        return Gate::allows('access-reportes');
+    }
 
     public static function getPages(): array
     {

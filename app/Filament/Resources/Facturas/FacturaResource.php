@@ -13,6 +13,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Gate;
 
 class FacturaResource extends Resource
 {
@@ -22,6 +23,11 @@ class FacturaResource extends Resource
     
     protected static string|\UnitEnum|null $navigationGroup = 'Ventas';
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function canAccess(): bool
+    {
+        return Gate::allows('access-facturas');
+    }
 
     public static function form(Schema $schema): Schema
     {

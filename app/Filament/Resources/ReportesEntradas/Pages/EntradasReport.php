@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EntradasReport extends ListRecords
 {
@@ -228,15 +229,20 @@ class EntradasReport extends ListRecords
         
         $html = $this->generarHTML($entradas, $totales);
         
-        // Crear el PDF usando HTML simple
-        $nombreArchivo = 'reporte_entradas_' . now()->format('Y-m-d_H-i-s') . '.html';
+        // Generar PDF con DomPDF
+        $pdf = Pdf::loadHTML($html)
+            ->setPaper('a4', 'landscape')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'sans-serif',
+            ]);
         
-        // Usar una respuesta de descarga directa con HTML
-        return response()->streamDownload(function () use ($html) {
-            echo $html;
-        }, $nombreArchivo, [
-            'Content-Type' => 'text/html',
-        ]);
+        $nombreArchivo = 'reporte_entradas_' . now()->format('Y-m-d_H-i-s') . '.pdf';
+        
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $nombreArchivo);
     }
     
     private function generarHTML($entradas, $totales): string

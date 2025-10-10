@@ -32,12 +32,22 @@ class DatabaseSeeder extends Seeder
         ]);
         // Elimina todos los usuarios antes de crear el nuevo
         User::where('email', 'admin@example.com')->delete();
+        User::where('email', 'administrativo@example.com')->delete();
 
-
+        // Usuario Admin - Acceso total
         User::factory()->create([
-            'name' => 'admin',
+            'name' => 'Administrador',
             'email' => 'admin@example.com',
-            'password' => Hash::make('123456')
+            'password' => Hash::make('123456'),
+            'role' => 'admin',
+        ]);
+
+        // Usuario Administrativo - Solo facturación
+        User::factory()->create([
+            'name' => 'Administrativo',
+            'email' => 'administrativo@example.com',
+            'password' => Hash::make('123456'),
+            'role' => 'administrativo',
         ]);
     }
 }
